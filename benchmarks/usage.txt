@@ -1,0 +1,12 @@
+  Pino Benchmarks
+
+  To run a benchmark, specify which to run:
+
+  ・all        ⁃ run all benchmarks (takes a while)
+  ・basic      ⁃ log a simple string
+  ・object     ⁃ logging a basic object
+  ・deepobject ⁃ logging a large object
+
+  Example:
+
+    node runbench basic

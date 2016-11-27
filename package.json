@@ -1,0 +1,41 @@
+{
+  "name": "pino-debug",
+  "version": "0.0.0",
+  "description": "High performance debug logging",
+  "main": "index.js",
+  "scripts": {
+    "deps": "dependency-check . && dependency-check . --extra --no-dev",
+    "test": "standard && npm run deps && NODE_ENV=test tap test",
+    "test:cov": "standard && npm run deps && NODE_ENV=test tap --cov test",
+    "bench": "node benchmarks/runbench all",
+    "bench-basic": "node benchmarks/runbench basic",
+    "bench-object": "node benchmarks/runbench object",
+    "bench-deepobject": "node benchmarks/runbench deepobject"
+  },
+  "repository": "pinojs/pino-debug",
+  "keywords": [
+    "pino",
+    "debug",
+    "fast",
+    "performance",
+    "debugging",
+    "logging",
+    "logger"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^2.3.3",
+    "pino": "^3.0.1"
+  },
+  "devDependencies": {
+    "dependency-check": "^2.6.0",
+    "fastbench": "^1.0.1",
+    "flush-write-stream": "^1.0.2",
+    "pump": "^1.0.1",
+    "split2": "^2.1.0",
+    "standard": "^8.6.0",
+    "steed": "^1.1.3",
+    "tap": "^8.0.1",
+    "through2": "^2.0.1"
+  }
+}
