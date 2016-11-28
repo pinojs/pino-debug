@@ -109,7 +109,7 @@ pinoDebug(pinoInstance, {
 })
 ```
 
-#### `opts.autoenable` `[true] | false`
+#### `opts.auto` `[true] | false`
 
 If `true` (default) any debug namespaces found in the keys of `opts.map` will be
 enabled.  

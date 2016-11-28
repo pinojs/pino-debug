@@ -1,12 +1,13 @@
 {
   "name": "pino-debug",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "High performance debug logging",
   "main": "index.js",
   "scripts": {
     "deps": "dependency-check . && dependency-check . --extra --no-dev",
     "test": "standard && npm run deps && NODE_ENV=test tap test",
     "test:cov": "standard && npm run deps && NODE_ENV=test tap --cov test",
+    "test:cov:html": "standard && npm run deps && NODE_ENV=test tap --coverage-report=html test",
     "bench": "node benchmarks/runbench all",
     "bench-basic": "node benchmarks/runbench basic",
     "bench-object": "node benchmarks/runbench object",
