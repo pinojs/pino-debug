@@ -8,6 +8,7 @@
     "test": "standard && npm run deps && NODE_ENV=test tap test",
     "test:cov": "standard && npm run deps && NODE_ENV=test tap --cov test",
     "test:cov:html": "standard && npm run deps && NODE_ENV=test tap --coverage-report=html test",
+    "ci": "npm run test:cov && codecov",
     "bench": "node benchmarks/runbench all",
     "bench-basic": "node benchmarks/runbench basic",
     "bench-object": "node benchmarks/runbench object",

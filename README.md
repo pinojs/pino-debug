@@ -57,7 +57,7 @@ Again this example assumes a generic `express` app:
 const pinoDebug = require('pino-debug')
 const logger = require('pino')({level: process.env.LEVEL || 'info'}, process.stderr);
 pinoDebug(logger, {
-  autoenable: true, // default
+  auto: true, // default
   map: {
     'example:server': 'info',
     'express:router': 'debug',
@@ -66,7 +66,7 @@ pinoDebug(logger, {
 })
 ```
 
-The `autoenable` option turns on any namespaces listed in the `map` object 
+The `auto` option turns on any namespaces listed in the `map` object 
 (so we don't have to use the `DEBUG` environment variable to turn them on).
 
 ## API
@@ -185,7 +185,7 @@ a [`pino`][13] instance and the mappings (as shown in usage examples).
 ## Acknowledgements
 Sponsored by [nearForm](http://tldrlegal.com/license/mit-license)
 
-[0]: https://img.shields.io/badge/stability-experimental-orange.svg?style=flat-square
+[0]: https://img.shields.io/badge/stability-stable-green.svg?style=flat-square
 [1]: https://nodejs.org/api/documentation.html#documentation_stability_index
 [2]: https://img.shields.io/npm/v/pino-debug.svg?style=flat-square
 [3]: https://npmjs.org/package/pino-debug
