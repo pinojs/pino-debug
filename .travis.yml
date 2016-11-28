@@ -4,5 +4,6 @@ node_js:
 - "7"
 sudo: false
 language: node_js
-script: "npm run test:cov"
-after_script: "npm i -g codecov.io && cat ./coverage/lcov.info | codecov"
+script: "npm run ci"
+after_success:
+  - npm i -g codecov && codecov -t a62849b5-9006-4dd4-8334-94624d6d8ea2

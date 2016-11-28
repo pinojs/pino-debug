@@ -1,6 +1,6 @@
 # pino-debug [![stability][0]][1]
 [![npm version][2]][3] [![build status][4]][5] [![test coverage][6]][7]
-[![downloads][8]][9] [![js-standard-style][10]][11]
+[![downloads][8]][9] [![dependencies freshness][14]][15] [![js-standard-style][10]][11]
 
 High performance debug logging. 
 
@@ -199,4 +199,5 @@ Sponsored by [nearForm](http://tldrlegal.com/license/mit-license)
 [11]: https://github.com/feross/standard
 [12]: https://npm.im/debug
 [13]: https://npm.im/github/pinojs/pino
-
+[14]: https://david-dm.org/pinojs/pino-debug/status.svg
+[15]: https://david-dm.org/pinojs/pino-debug
