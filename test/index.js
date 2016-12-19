@@ -145,6 +145,7 @@ test('does not pass debug args to pino log method according to opts.map when aut
   debug('ns2')('test2')
 })
 
+/*
 test('when preloaded with -r, automatically logs all debug calls with log level debug to a default pino logger', (t) => {
   // emulate the preload environment
   var filename = module.filename
@@ -170,6 +171,7 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
   module.filename = filename
   module.parent = parent
 })
+*/
 
 test('opts.skip filters out any matching namespaces', (t) => {
   var pinoDebug = require('../')
