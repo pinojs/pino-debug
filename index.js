@@ -56,7 +56,7 @@ function override (script) {
           }
           return req(s)
         }, req)
-      }(require))
-    ${script}    
+      }(require));
+    ${script}
   });`
 }
