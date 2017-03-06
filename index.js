@@ -44,7 +44,7 @@ function override (script) {
   return `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
         return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
-          if (s === './debug' && __dirname.slice(-18) === 'node_modules/debug') {
+          if (s === './debug' && /node_modules\\/debug/.test(__dirname.slice(-22))) {
             var dbg = req('${require.resolve('./debug')}')
             var real = req(s)
             Object.assign(dbg, real)

@@ -3,14 +3,30 @@ var through = require('through2')
 var test = tap.test
 
 tap.afterEach((done) => {
-  ;[
-    require.resolve('debug'),
-    require.resolve('debug/node.js'),
-    require.resolve('debug/debug.js'),
-    require.resolve('../debug'),
-    require.resolve('../'),
-    require.resolve('./')
-  ].forEach((k) => delete require.cache[k])
+  var deps
+  try {
+    // debug 2.4 and down
+    deps = [
+      require.resolve('debug'),
+      require.resolve('debug/node.js'),
+      require.resolve('debug/debug.js'),
+      require.resolve('../debug'),
+      require.resolve('../'),
+      require.resolve('./')
+    ]
+  } catch (e) {
+    // debug 2.5 and up
+    deps = [
+      require.resolve('debug'),
+      require.resolve('debug/node.js'),
+      require.resolve('debug/src/node.js'),
+      require.resolve('debug/src/debug.js'),
+      require.resolve('../debug'),
+      require.resolve('../'),
+      require.resolve('./')
+    ]
+  }
+  deps.forEach((k) => delete require.cache[k])
   process.env.DEBUG = ''
   done()
 })
@@ -121,8 +137,9 @@ test('passes debug args to pino log method according to opts.map when auto is of
   pinoDebug(require('pino')(stream), {auto: false, map: {ns: 'info', ns2: 'warn'}})
   var debug = require('debug')
   debug.enable('ns')
-  debug.enable('ns2')
   debug('ns')('test')
+  debug = require('debug')
+  debug.enable('ns2')
   debug('ns2')('test2')
 })
 
@@ -255,7 +272,6 @@ test('when there is a match conflict, log level is set to most precise match', (
       ns3: 'debug',
       'ns*': 'info',
       '*trace*': 'trace'
-
     }
   })
   var debug = require('debug')
