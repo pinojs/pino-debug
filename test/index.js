@@ -284,3 +284,8 @@ test('when there is a match conflict, log level is set to most precise match', (
   debug('ns3')('test7')
   debug('testbla')('test8')
 })
+
+test('uses native `Object` regardless of wrapped file contents', (t) => {
+  t.doesNotThrow(() => require('./fixtures/object-override'))
+  t.end()
+})

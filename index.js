@@ -43,6 +43,7 @@ function byPrecision (a, b) {
 function override (script) {
   return `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
+        var Object = ({}).constructor
         return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
           if (s === './debug' && /node_modules\\/debug/.test(__dirname.slice(-22))) {
             var dbg = req('${require.resolve('./debug')}')
