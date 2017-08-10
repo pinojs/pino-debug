@@ -41,7 +41,7 @@ function byPrecision (a, b) {
 }
 
 function override (script) {
-  return `(function(exports, require, module, __filename, __dirname) {
+  var head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
         var Object = ({}).constructor
         return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
@@ -58,6 +58,8 @@ function override (script) {
           return req(s)
         }, req)
       }(require));
-    ${script}
-  });`
+  `.replace(/\n/g, ';').replace(/\s+/g, ' ').replace(/;+/g, ';')
+  var tail = '});'
+
+  return head + script + tail
 }

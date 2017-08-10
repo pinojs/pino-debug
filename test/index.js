@@ -289,3 +289,12 @@ test('uses native `Object` regardless of wrapped file contents', (t) => {
   t.doesNotThrow(() => require('./fixtures/object-override'))
   t.end()
 })
+
+test('keeps line numbers consistent', (t) => {
+  require('../')
+  var lineNums = require('./fixtures/line-numbers')
+  var line = lineNums()
+  t.is(line, 4)
+
+  t.end()
+})
