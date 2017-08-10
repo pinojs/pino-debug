@@ -1,6 +1,6 @@
 {
   "name": "pino-debug",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "High performance debug logging",
   "main": "index.js",
   "scripts": {
