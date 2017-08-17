@@ -59,7 +59,7 @@ function override (script) {
         }, req)
       }(require));
   `.replace(/\n/g, ';').replace(/\s+/g, ' ').replace(/;+/g, ';')
-  var tail = '});'
+  var tail = '\n});'
 
   return head + script + tail
 }
