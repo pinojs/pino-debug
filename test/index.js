@@ -298,3 +298,8 @@ test('keeps line numbers consistent', (t) => {
 
   t.end()
 })
+
+test('results in valid syntax when source has trailing comment', (t) => {
+  t.doesNotThrow(() => require('./fixtures/trailing-comment'))
+  t.end()
+})
