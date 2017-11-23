@@ -17,15 +17,17 @@ function pinoDebug (logger, opts) {
   opts = opts || {}
   var auto = 'auto' in opts ? opts.auto : true
   var map = opts.map || {}
+  var namespaces = []
   debug.map = Object.keys(map).sort(byPrecision).reduce(function (m, k) {
-    if (auto) debug.enable(k)
+    if (auto) namespaces.push(k)
     m.set(RegExp('^' + k.replace(/[\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*?') + '$'), map[k])
     return m
   }, new Map())
   debug.logger = logger || pino({level: 'debug'})
   if (opts.skip) {
-    opts.skip.map(function (ns) { return '-' + ns }).forEach(debug.enable)
+    opts.skip.map(function (ns) { return '-' + ns }).forEach(function (ns) { namespaces.push(ns) })
   }
+  debug.enable(namespaces.join(','))
 }
 
 function byPrecision (a, b) {
