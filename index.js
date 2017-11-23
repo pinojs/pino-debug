@@ -41,12 +41,24 @@ function byPrecision (a, b) {
 }
 
 function override (script) {
+  var pathToPinoDebug = require.resolve('./debug')
+
+  if (process.platform === 'win32') {
+    pathToPinoDebug = pathToPinoDebug.replace(/\\/g, '/')
+  }
   var head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
         var Object = ({}).constructor
-        return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
-          if (s === './debug' && /node_modules\\/debug/.test(__dirname.slice(-22))) {
-            var dbg = req('${require.resolve('./debug')}')
+        return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {        
+          var dirname = __dirname.slice(-22)
+          var pathToPinoDebug = '${pathToPinoDebug}'
+                    
+          if (process.platform === 'win32') {
+              dirname = dirname.replace(/\\\\/g, '/')
+          }
+          
+          if (s === './debug' && /node_modules\\/debug/.test(dirname)) {
+            var dbg = req(pathToPinoDebug)
             var real = req(s)
             Object.assign(dbg, real)
             Object.defineProperty(real, 'save', {get: function () {
