@@ -43,11 +43,8 @@ function byPrecision (a, b) {
 }
 
 function override (script) {
-  var pathToPinoDebug = require.resolve('./debug')
+  var pathToPinoDebug = require.resolve('./debug').replace(/\\/g, '/')
 
-  if (process.platform === 'win32') {
-    pathToPinoDebug = pathToPinoDebug.replace(/\\/g, '/')
-  }
   var head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
         var Object = ({}).constructor
