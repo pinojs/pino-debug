@@ -17,15 +17,17 @@ function pinoDebug (logger, opts) {
   opts = opts || {}
   var auto = 'auto' in opts ? opts.auto : true
   var map = opts.map || {}
+  var namespaces = []
   debug.map = Object.keys(map).sort(byPrecision).reduce(function (m, k) {
-    if (auto) debug.enable(k)
+    if (auto) namespaces.push(k)
     m.set(RegExp('^' + k.replace(/[\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*?') + '$'), map[k])
     return m
   }, new Map())
   debug.logger = logger || pino({level: 'debug'})
   if (opts.skip) {
-    opts.skip.map(function (ns) { return '-' + ns }).forEach(debug.enable)
+    opts.skip.map(function (ns) { return '-' + ns }).forEach(function (ns) { namespaces.push(ns) })
   }
+  debug.enable(namespaces.join(','))
 }
 
 function byPrecision (a, b) {
@@ -41,12 +43,27 @@ function byPrecision (a, b) {
 }
 
 function override (script) {
+  // Escape backslashes to prevent from interpreting backslashes on Windows platform
+  // during expression interpolation in ES6 template literal.
+  // Without this change, Windows path retrieved from require.resolve (eg.
+  // F:\Projekty\Learn\pino-debug\debug.js) will be interpreted during interpolation
+  // as F:ProjektyLearnpino-debugdebug.js and node.js will throw error
+  // Cannot find module 'F:ProjektyLearnpino-debugdebug.js'
+  var pathToPinoDebug = require.resolve('./debug').replace(/\\/g, '\\\\')
+
   var head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
         var Object = ({}).constructor
-        return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
-          if (s === './debug' && /node_modules\\/debug/.test(__dirname.slice(-22))) {
-            var dbg = req('${require.resolve('./debug')}')
+        return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {        
+          var dirname = __dirname.slice(-22)
+          var pathToPinoDebug = '${pathToPinoDebug}'
+                    
+          if (process.platform === 'win32') {
+              dirname = dirname.replace(/\\\\/g, '/')
+          }
+          
+          if (s === './debug' && /node_modules\\/debug/.test(dirname)) {
+            var dbg = req(pathToPinoDebug)
             var real = req(s)
             Object.assign(dbg, real)
             Object.defineProperty(real, 'save', {get: function () {
