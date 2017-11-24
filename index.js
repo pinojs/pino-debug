@@ -43,6 +43,12 @@ function byPrecision (a, b) {
 }
 
 function override (script) {
+  // Escape backslashes to prevent from interpreting backslashes on Windows platform
+  // during expression interpolation in ES6 template literal.
+  // Without this change, Windows path retrieved from require.resolve (eg.
+  // F:\Projekty\Learn\pino-debug\debug.js) will be interpreted during interpolation
+  // as F:ProjektyLearnpino-debugdebug.js and node.js will throw error
+  // Cannot find module 'F:ProjektyLearnpino-debugdebug.js'
   var pathToPinoDebug = require.resolve('./debug').replace(/\\/g, '\\\\')
 
   var head = `(function(exports, require, module, __filename, __dirname) {
