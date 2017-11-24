@@ -43,7 +43,7 @@ function byPrecision (a, b) {
 }
 
 function override (script) {
-  var pathToPinoDebug = require.resolve('./debug').replace(/\\/g, '/')
+  var pathToPinoDebug = require.resolve('./debug').replace(/\\/g, '\\\\')
 
   var head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
