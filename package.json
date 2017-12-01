@@ -10,6 +10,7 @@
     "test-2.4": "npm i debug@2.4 && npm run test",
     "test-2.5": "npm i debug@2.5 && npm run test",
     "test-2.6": "npm i debug@2.6 && npm run test",
+    "test-3.1": "npm i debug@3.1 && npm run test",
     "test:cov": "standard && npm run deps && NODE_ENV=test tap --cov test/*.js",
     "ci": "npm test -- --coverage-report=lcov",
     "test:cov:html": "standard && npm run deps && NODE_ENV=test tap --coverage-report=html test",
