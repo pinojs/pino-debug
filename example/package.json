@@ -5,9 +5,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "start-preload": "DEBUG=* node -r ../ ./bin/www",
-    "start-programmatic": "./bin/www-programmatic",
-    "start-programmatic-debug": "LEVEL=debug ./bin/www-programmatic",
-    "start-programmatic-trace": "LEVEL=trace ./bin/www-programmatic"
+    "start-programmatic": "node ./bin/www-programmatic",
+    "start-programmatic-debug": "LEVEL=debug node ./bin/www-programmatic",
+    "start-programmatic-trace": "LEVEL=trace node ./bin/www-programmatic"
   },
   "dependencies": {
     "body-parser": "~1.15.2",
