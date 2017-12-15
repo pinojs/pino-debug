@@ -304,7 +304,7 @@ test('results in valid syntax when source has trailing comment', (t) => {
   t.end()
 })
 
-test('Set env.DEBUG and captures any calls to `debug` and passes them through pino logger', (t) => {
+test('preserves DEBUG env independently from debug module', (t) => {
   process.env.DEBUG = 'ns1'
   var pinoDebug = require('../')
   var stream = through((line, _, cb) => {
