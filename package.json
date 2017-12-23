@@ -34,14 +34,14 @@
     "pino": "^4.0.2"
   },
   "devDependencies": {
-    "dependency-check": "^2.6.0",
+    "dependency-check": "^2.9.2",
     "fastbench": "^1.0.1",
     "flush-write-stream": "^1.0.2",
-    "pump": "^1.0.1",
-    "split2": "^2.1.0",
-    "standard": "^8.6.0",
+    "pump": "^2.0.0",
+    "split2": "^2.2.0",
+    "standard": "^10.0.0",
     "steed": "^1.1.3",
-    "tap": "^8.0.1",
+    "tap": "^11.0.0",
     "through2": "^2.0.1"
   }
 }
