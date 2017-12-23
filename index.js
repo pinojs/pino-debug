@@ -17,7 +17,7 @@ function pinoDebug (logger, opts) {
   opts = opts || {}
   var auto = 'auto' in opts ? opts.auto : true
   var map = opts.map || {}
-  var namespaces = []
+  var namespaces = (process.env.DEBUG || '').split(/[\s,]+/)
   debug.map = Object.keys(map).sort(byPrecision).reduce(function (m, k) {
     if (auto) namespaces.push(k)
     m.set(RegExp('^' + k.replace(/[\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*?') + '$'), map[k])
