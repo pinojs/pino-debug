@@ -3,7 +3,7 @@ var wrap = require('module').wrap
 var bench = require('fastbench')
 var pino = require('pino')
 var fs = require('fs')
-var dest = fs.createWriteStream('/dev/null')
+var dest = process.platform === 'win32' ? fs.createWriteStream('\\\\.\\NUL') : fs.createWriteStream('/dev/null')
 var plog = pino(dest)
 
 process.env.DEBUG = 'dlog'
@@ -11,8 +11,8 @@ var dlog = require('debug')('dlog')
 dlog.log = function (s) { dest.write(s) }
 
 delete require.cache[require.resolve('debug')]
-delete require.cache[require.resolve('debug/debug.js')]
-delete require.cache[require.resolve('debug/node')]
+delete require.cache[require.resolve('debug/src/debug.js')]
+delete require.cache[require.resolve('debug/src/node')]
 
 delete require.cache[require.resolve('pino')]
 pino = require('pino')
@@ -20,8 +20,8 @@ require('../')(pino({level: 'debug'}, dest))
 var pdlog = require('debug')('dlog')
 
 delete require.cache[require.resolve('debug')]
-delete require.cache[require.resolve('debug/debug.js')]
-delete require.cache[require.resolve('debug/node')]
+delete require.cache[require.resolve('debug/src/debug.js')]
+delete require.cache[require.resolve('debug/src/node')]
 delete require.cache[require.resolve('../')]
 delete require.cache[require.resolve('../debug')]
 require('module').wrap = wrap

@@ -17,7 +17,7 @@ function pinoDebug (logger, opts) {
   opts = opts || {}
   var auto = 'auto' in opts ? opts.auto : true
   var map = opts.map || {}
-  var namespaces = []
+  var namespaces = getNamespaces()
   debug.map = Object.keys(map).sort(byPrecision).reduce(function (m, k) {
     if (auto) namespaces.push(k)
     m.set(RegExp('^' + k.replace(/[\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*?') + '$'), map[k])
@@ -28,6 +28,14 @@ function pinoDebug (logger, opts) {
     opts.skip.map(function (ns) { return '-' + ns }).forEach(function (ns) { namespaces.push(ns) })
   }
   debug.enable(namespaces.join(','))
+}
+
+function getNamespaces () {
+  var namespaces = process.env.DEBUG
+  if (namespaces != null) {
+    return (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/)
+  }
+  return []
 }
 
 function byPrecision (a, b) {

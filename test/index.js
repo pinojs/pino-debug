@@ -162,7 +162,6 @@ test('does not pass debug args to pino log method according to opts.map when aut
   debug('ns2')('test2')
 })
 
-/*
 test('when preloaded with -r, automatically logs all debug calls with log level debug to a default pino logger', (t) => {
   // emulate the preload environment
   var filename = module.filename
@@ -180,15 +179,14 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
       t.end()
     }
   }
+  process.env.DEBUG = '*'
   require('../')
   var debug = require('debug')
-  debug.enable('ns')
   debug('ns')('test')
 
   module.filename = filename
   module.parent = parent
 })
-*/
 
 test('opts.skip filters out any matching namespaces', (t) => {
   var pinoDebug = require('../')
@@ -302,4 +300,18 @@ test('keeps line numbers consistent', (t) => {
 test('results in valid syntax when source has trailing comment', (t) => {
   t.doesNotThrow(() => require('./fixtures/trailing-comment'))
   t.end()
+})
+
+test('preserves DEBUG env independently from debug module', (t) => {
+  process.env.DEBUG = 'ns1'
+  var pinoDebug = require('../')
+  var stream = through((line, _, cb) => {
+    var obj = JSON.parse(line)
+    t.is(obj.msg, 'test')
+    t.is(obj.ns, 'ns1')
+    t.end()
+  })
+  pinoDebug(require('pino')({level: 'debug'}, stream))
+  var debug = require('debug')
+  debug('ns1')('test')
 })
