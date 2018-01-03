@@ -301,3 +301,17 @@ test('results in valid syntax when source has trailing comment', (t) => {
   t.doesNotThrow(() => require('./fixtures/trailing-comment'))
   t.end()
 })
+
+test('preserves DEBUG env independently from debug module', (t) => {
+  process.env.DEBUG = 'ns1'
+  var pinoDebug = require('../')
+  var stream = through((line, _, cb) => {
+    var obj = JSON.parse(line)
+    t.is(obj.msg, 'test')
+    t.is(obj.ns, 'ns1')
+    t.end()
+  })
+  pinoDebug(require('pino')({level: 'debug'}, stream))
+  var debug = require('debug')
+  debug('ns1')('test')
+})

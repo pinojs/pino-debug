@@ -3,7 +3,7 @@ var wrap = require('module').wrap
 var bench = require('fastbench')
 var pino = require('pino')
 var fs = require('fs')
-var dest = fs.createWriteStream('/dev/null')
+var dest = process.platform === 'win32' ? fs.createWriteStream('\\\\.\\NUL') : fs.createWriteStream('/dev/null')
 var plog = pino(dest)
 
 process.env.DEBUG = 'dlog'
