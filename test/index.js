@@ -179,9 +179,9 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
       t.end()
     }
   }
+  process.env.DEBUG = '*'
   require('../')
   var debug = require('debug')
-  debug.enable('ns')
   debug('ns')('test')
 
   module.filename = filename
