@@ -61,15 +61,16 @@ function override (script) {
 
   var head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
+        var pinoDebugOs = require('os')
         var Object = ({}).constructor
-        return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {        
+        return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
           var dirname = __dirname.slice(-22)
           var pathToPinoDebug = '${pathToPinoDebug}'
-                    
-          if (process.platform === 'win32') {
+
+          if (pinoDebugOs.platform() === 'win32') {
               dirname = dirname.replace(/\\\\/g, '/')
           }
-          
+
           if (s === './debug' && /node_modules\\/debug/.test(dirname)) {
             var dbg = req(pathToPinoDebug)
             var real = req(s)
