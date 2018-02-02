@@ -198,6 +198,6 @@ Sponsored by [nearForm](http://tldrlegal.com/license/mit-license)
 [10]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
 [11]: https://github.com/feross/standard
 [12]: https://npm.im/debug
-[13]: https://npm.im/github/pinojs/pino
+[13]: https://npm.im/pino
 [14]: https://david-dm.org/pinojs/pino-debug/status.svg
 [15]: https://david-dm.org/pinojs/pino-debug
