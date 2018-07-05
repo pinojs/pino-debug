@@ -1,3 +1,5 @@
+'use strict'
+var execSync = require('child_process').execSync
 var tap = require('tap')
 var through = require('through2')
 var test = tap.test
@@ -77,22 +79,20 @@ test('defaults to calling pinoInstance.debug', (t) => {
 })
 
 test('when passed no args, creates a standard pino logger with log level set to debug and logs to it\'s debug method', (t) => {
-  var pinoDebug = require('../')
-  var write = process.stdout.write
-  process.stdout.write = function (line) {
-    if (line[0] === '{') {
-      process.stdout.write = write
-      var obj = JSON.parse(line)
-      t.is(obj.msg, 'test')
-      t.is(obj.ns, 'ns')
-      t.is(obj.level, 20)
-      t.end()
-    }
-  }
-  pinoDebug()
-  var debug = require('debug')
-  debug.enable('ns')
-  debug('ns')('test')
+  var program = `
+    var pinoDebug = require('${__dirname}/../')
+    var write = process.stdout.write
+    pinoDebug()
+    var debug = require('debug')
+    debug.enable('ns')
+    debug('ns')('test')
+  `
+  var line = execSync(`node -e "${program}"`).toString()
+  var obj = JSON.parse(line)
+  t.is(obj.msg, 'test')
+  t.is(obj.ns, 'ns')
+  t.is(obj.level, 20)
+  t.end()
 })
 
 test('passes debug args to pino log method according to opts.map', (t) => {
@@ -163,29 +163,16 @@ test('does not pass debug args to pino log method according to opts.map when aut
 })
 
 test('when preloaded with -r, automatically logs all debug calls with log level debug to a default pino logger', (t) => {
-  // emulate the preload environment
-  var filename = module.filename
-  var parent = module.parent
-  var write = process.stdout.write
-  module.filename = null
-  module.parent = null
-  process.stdout.write = (line) => {
-    if (line[0] === '{') {
-      process.stdout.write = write
-      var obj = JSON.parse(line)
-      t.is(obj.msg, 'test')
-      t.is(obj.ns, 'ns')
-      t.is(obj.level, 20)
-      t.end()
-    }
-  }
-  process.env.DEBUG = '*'
-  require('../')
-  var debug = require('debug')
-  debug('ns')('test')
-
-  module.filename = filename
-  module.parent = parent
+  var program = `
+    var debug = require('debug')
+    debug('ns')('test')
+  `
+  var line = execSync(`node -r ${__dirname}/../ -e "${program}"`, {env: {DEBUG:'*'}}).toString()
+  var obj = JSON.parse(line)
+  t.is(obj.msg, 'test')
+  t.is(obj.ns, 'ns')
+  t.is(obj.level, 20)
+  t.end()
 })
 
 test('opts.skip filters out any matching namespaces', (t) => {

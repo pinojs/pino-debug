@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "deps": "dependency-check . && dependency-check . --extra --no-dev",
-    "test": "standard && dependency-check . && cross-env NODE_ENV=test tap test/*.js",
+    "test": "dependency-check . && cross-env NODE_ENV=test tap test/*.js",
     "test-2.3": "npm i debug@2.3 && npm run test",
     "test-2.4": "npm i debug@2.4 && npm run test",
     "test-2.5": "npm i debug@2.5 && npm run test",
