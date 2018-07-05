@@ -87,7 +87,7 @@ test('when passed no args, creates a standard pino logger with log level set to 
     debug.enable('ns')
     debug('ns')('test')
   `
-  var line = execSync(`node -e "${program}"`).toString()
+  var line = execSync(`${process.argv[0]} -e "${program}"`).toString()
   var obj = JSON.parse(line)
   t.is(obj.msg, 'test')
   t.is(obj.ns, 'ns')
@@ -167,7 +167,7 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
     var debug = require('debug')
     debug('ns')('test')
   `
-  var line = execSync(`node -r ${__dirname}/../ -e "${program}"`, {env: {DEBUG:'*'}}).toString()
+  var line = execSync(`${process.argv[0]} -r ${__dirname}/../ -e "${program}"`, {env: {DEBUG:'*'}}).toString()
   var obj = JSON.parse(line)
   t.is(obj.msg, 'test')
   t.is(obj.ns, 'ns')
