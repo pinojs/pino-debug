@@ -31,8 +31,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "debug": "^3.1.0",
     "pino": "^4.0.2"
+  },
+  "peerDependencies": {
+    "debug": ">=2"
   },
   "devDependencies": {
     "cross-env": "^5.2.0",

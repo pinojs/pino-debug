@@ -4,31 +4,47 @@ var tap = require('tap')
 var through = require('through2')
 var test = tap.test
 
+const debugModules = [
+  // <= 2.4
+  [
+    'debug/node.js',
+    'debug/debug.js'
+  ],
+  // <= 4.0.1
+  [
+    'debug/node.js',
+    'debug/src/node.js',
+    'debug/src/debug.js'
+  ],
+  [
+    'debug/src/node.js',
+    'debug/src/common.js'
+  ]
+]
+
+const commonModules = [
+  'debug',
+  '../debug',
+  '../',
+  './'
+]
+
 tap.afterEach((done) => {
-  var deps
-  try {
-    // debug 2.4 and down
-    deps = [
-      require.resolve('debug'),
-      require.resolve('debug/node.js'),
-      require.resolve('debug/debug.js'),
-      require.resolve('../debug'),
-      require.resolve('../'),
-      require.resolve('./')
-    ]
-  } catch (e) {
-    // debug 2.5 and up
-    deps = [
-      require.resolve('debug'),
-      require.resolve('debug/node.js'),
-      require.resolve('debug/src/node.js'),
-      require.resolve('debug/src/debug.js'),
-      require.resolve('../debug'),
-      require.resolve('../'),
-      require.resolve('./')
-    ]
+  let err = null
+  for (const modules of debugModules) {
+    try {
+      commonModules.concat(modules)
+        .map(m => require.resolve(m))
+        .forEach(k => delete require.cache[k])
+      err = null
+      break
+    } catch (e) {
+      err = e
+    }
   }
-  deps.forEach((k) => delete require.cache[k])
+  if (err) {
+    throw err
+  }
   process.env.DEBUG = ''
   done()
 })
