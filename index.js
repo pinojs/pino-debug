@@ -67,7 +67,7 @@ function override (script) {
         return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
           var dirname = __dirname.split(pinoDebugPath.sep)
           var lastNodeModulesIndex = dirname.lastIndexOf('node_modules')
-          var isDebug = lastNodeModulesIndex > 0 && dirname[lastNodeModulesIndex + 1] === 'debug'
+          var isDebug = lastNodeModulesIndex >= 0 && dirname[lastNodeModulesIndex + 1] === 'debug'
           var pathToPinoDebug = '${pathToPinoDebug}'
 
           if (isDebug) {
