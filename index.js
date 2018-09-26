@@ -62,24 +62,37 @@ function override (script) {
   var head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
         var pinoDebugOs = require('os')
+        var pinoDebugPath = require('path')
         var Object = ({}).constructor
         return Object.setPrototypeOf(function pinoDebugWrappedRequire(s) {
-          var dirname = __dirname.slice(-22)
+          var dirname = __dirname.split(pinoDebugPath.sep)
+          var lastNodeModulesIndex = dirname.lastIndexOf('node_modules')
+          var isDebug = lastNodeModulesIndex >= 0 && dirname[lastNodeModulesIndex + 1] === 'debug'
           var pathToPinoDebug = '${pathToPinoDebug}'
 
-          if (pinoDebugOs.platform() === 'win32') {
-              dirname = dirname.replace(/\\\\/g, '/')
-          }
-
-          if (s === './debug' && /node_modules\\/debug/.test(dirname)) {
+          if (isDebug) {
             var dbg = req(pathToPinoDebug)
             var real = req(s)
-            Object.assign(dbg, real)
-            Object.defineProperty(real, 'save', {get: function () {
-              Object.defineProperty(real, 'save', {value: dbg.save})
-              return real.save
-            }, configurable: true})
-            return dbg
+            if (s === './common') {
+              var wrapped = function pinoDebugWrapSetup(env) {
+                var orig = real(env)
+                Object.assign(dbg, orig)
+                Object.defineProperty(orig, 'save', {get: function () {
+                  Object.defineProperty(orig, 'save', {value: dbg.save})
+                  return orig.save
+                }, configurable: true})
+                return dbg
+              }
+              return wrapped
+            }
+            if (s === './debug') {
+              Object.assign(dbg, real)
+              Object.defineProperty(real, 'save', {get: function () {
+                Object.defineProperty(real, 'save', {value: dbg.save})
+                return real.save
+              }, configurable: true})
+              return dbg
+            }
           }
           return req(s)
         }, req)
