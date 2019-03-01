@@ -83,7 +83,7 @@ logging level to `'debug'`.
 
 ### pinoDebug() => undefined
 
-Call `pino-debug` with arguments and a default [`pino`][13] instance will be created with 
+Call `pino-debug` without arguments and a default [`pino`][13] instance will be created with 
 the logging level set to 20 (`'debug'` level). 
 
 Any debug namespaces enabled via `DEBUG` or `debug.enable` will be logged 
