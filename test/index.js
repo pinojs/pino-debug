@@ -183,7 +183,7 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
     var debug = require('debug')
     debug('ns')('test')
   `
-  var line = execSync(`${process.argv[0]} -r ${__dirname}/../ -e "${program}"`, {env: {DEBUG:'*'}}).toString()
+  var line = execSync(`${process.argv[0]} -r ${__dirname}/../ -e "${program}"`, {env: {DEBUG: '*'}}).toString()
   var obj = JSON.parse(line)
   t.is(obj.msg, 'test')
   t.is(obj.ns, 'ns')
@@ -317,4 +317,23 @@ test('preserves DEBUG env independently from debug module', (t) => {
   pinoDebug(require('pino')({level: 'debug'}, stream))
   var debug = require('debug')
   debug('ns1')('test')
+})
+
+test('supports extend method', (t) => {
+  process.env.DEBUG = '*'
+  var pinoDebug = require('../')
+  var ns = ['ns1', 'ns1:ns2', 'ns1;ns2']
+  var count = 0
+  var stream = through((line, _, cb) => {
+    var obj = JSON.parse(line)
+    t.is(obj.msg, 'test')
+    t.is(obj.ns, ns[count++])
+    cb()
+  }, () => t.end())
+  pinoDebug(require('pino')({level: 'debug'}, stream))
+  var debug = require('debug')
+  debug('ns1')('test')
+  debug('ns1').extend('ns2')('test')
+  debug('ns1').extend('ns2', ';')('test')
+  stream.end()
 })
