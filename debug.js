@@ -21,6 +21,9 @@ function debug (namespace) {
   enabled.enabled = true
 
   var fn = debug.enabled(namespace) ? enabled : disabled
+  fn.extend = function (subNamespace, delimiter) {
+    return debug(namespace + (delimiter || ':') + subNamespace)
+  }
 
   fn.namespace = namespace
 
