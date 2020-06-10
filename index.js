@@ -2,7 +2,7 @@
 
 var pino = require('pino')
 require('module').wrap = override
-var debug = require('debug')
+var debug = reload('debug')
 
 module.exports = pinoDebug
 
@@ -101,4 +101,26 @@ function override (script) {
   var tail = '\n});'
 
   return head + script + tail
+}
+
+function reload(module) {
+  unload(module);
+  return require(module);
+}
+
+function unload(module, stack) {
+  var path = require.resolve(module);
+
+  if (require.cache[path] && require.cache[path].children) {
+    stack = stack || [];
+
+    require.cache[path].children.forEach(function (child) {
+      if (!stack.includes(child.id)) {
+        stack.push(path);
+        unload(child.id, stack);
+      }
+    });
+  }
+
+  delete require.cache[path];
 }
