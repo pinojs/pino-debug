@@ -189,8 +189,8 @@ Sponsored by [nearForm](http://tldrlegal.com/license/mit-license)
 [1]: https://nodejs.org/api/documentation.html#documentation_stability_index
 [2]: https://img.shields.io/npm/v/pino-debug.svg?style=flat-square
 [3]: https://npmjs.org/package/pino-debug
-[4]: https://img.shields.io/travis/pinojs/pino-debug/master.svg?style=flat-square
-[5]: https://travis-ci.org/pinojs/pino-debug
+[4]: https://img.shields.io/github/workflow/status/pinojs/pino-debug/CI.svg?style=flat-square
+[5]: https://github.com/pinojs/pino-debug/actions?query=workflow%3ACI+branch%3Amaster
 [6]: https://img.shields.io/codecov/c/github/pinojs/pino-debug/master.svg?style=flat-square
 [7]: https://codecov.io/github/pinojs/pino-debug
 [8]: http://img.shields.io/npm/dm/pino-debug.svg?style=flat-square
