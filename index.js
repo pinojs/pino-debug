@@ -96,9 +96,10 @@ function override (script) {
           }
           return req(s)
         }, req)
-      }(require));
-  `.replace(/\n/g, ';').replace(/\s+/g, ' ').replace(/;+/g, ';')
-  var tail = '\n});'
+      }(require))
+      return (function(){
+  `.trim().replace(/\n/g, ';').replace(/\s+/g, ' ').replace(/;+/g, ';')
+  var tail = '\n}).call(this);})'
 
   return head + script + tail
 }

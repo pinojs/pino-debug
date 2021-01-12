@@ -337,3 +337,8 @@ test('supports extend method', (t) => {
   debug('ns1').extend('ns2', ';')('test')
   stream.end()
 })
+
+test('does not invalidate strict mode', (t) => {
+  t.is(require('./fixtures/strict-mode'), true)
+  t.end()
+})
