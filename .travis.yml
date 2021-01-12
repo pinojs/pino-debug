@@ -1,16 +1,11 @@
 node_js:
-- "4"
-- "6"
-- "8"
 - "10"
+- "12"
+- "14"
 env:
 - DEBUG_VERSION=2
 - DEBUG_VERSION=3
 - DEBUG_VERSION=4
-matrix:
-  exclude:
-  - node_js: "4"
-    env: DEBUG_VERSION=4
 sudo: false
 language: node_js
 script:
