@@ -1,0 +1,26 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    name: ${{ matrix.node-version }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [10, 12, 14, 15]
+        debug: [2, 3, 4]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install
+        run: npm i
+      - name: Install debug@${{ matrix.debug}}
+        run: npm i --no-save debug@${{ matrix.debug }}
+      - name: Tests
+        run: npm run ci
+      - name: CodeCov
+        run: npm i -g codecov && codecov -t a62849b5-9006-4dd4-8334-94624d6d8ea2
