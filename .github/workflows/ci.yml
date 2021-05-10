@@ -1,7 +1,7 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  test:
+  build:
     name: ${{ matrix.node-version }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -24,3 +24,11 @@ jobs:
         run: npm run ci
       - name: CodeCov
         run: npm i -g codecov && codecov -t a62849b5-9006-4dd4-8334-94624d6d8ea2
+
+  automerge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
