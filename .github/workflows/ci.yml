@@ -1,7 +1,17 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+    paths-ignore:
+        - 'docs/**'
+        - '*.md'
+  pull_request:
+    paths-ignore:
+        - 'docs/**'
+        - '*.md'
+
 jobs:
-  test:
+  build:
     name: ${{ matrix.node-version }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -11,16 +21,29 @@ jobs:
         node-version: [10, 12, 14, 15, 16]
         debug: [2, 3, 4]
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout    
+        uses: actions/checkout@v2
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install
+
+      - name: Install dependencies
         run: npm i
       - name: Install debug@${{ matrix.debug}}
         run: npm i --no-save debug@${{ matrix.debug }}
-      - name: Tests
+
+      - name: Run Tests
         run: npm run ci
+
       - name: CodeCov
         run: npm i -g codecov && codecov -t a62849b5-9006-4dd4-8334-94624d6d8ea2
+
+  automerge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
