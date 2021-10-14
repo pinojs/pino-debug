@@ -42,7 +42,7 @@
     "fastbench": "^1.0.1",
     "flush-write-stream": "^2.0.0",
     "pump": "^3.0.0",
-    "split2": "^3.0.0",
+    "split2": "^4.0.0",
     "standard": "^16.0.0",
     "steed": "^1.1.3",
     "tap": "^14.0.0",
