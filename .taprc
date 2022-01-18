@@ -1,4 +1,5 @@
 ts: false
 jsx: false
 coverage: true
+check-coverage: false
 timeout: 480
