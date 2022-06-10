@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "dependency-check --no-dev . && cross-env NODE_ENV=test tap test/*.js",
+    "test:watch": "dependency-check --no-dev . && cross-env NODE_ENV=test tap --no-coverage-report -w test/*.js",
     "test-2.3": "npm i debug@2.3 && npm run test",
     "test-2.4": "npm i debug@2.4 && npm run test",
     "test-2.5": "npm i debug@2.5 && npm run test",
@@ -31,7 +32,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "pino": "^6.0.2"
+    "pino": "^8.0.0"
   },
   "peerDependencies": {
     "debug": ">=2"
@@ -45,7 +46,7 @@
     "split2": "^4.0.0",
     "standard": "^17.0.0",
     "steed": "^1.1.3",
-    "tap": "^14.0.0",
+    "tap": "^16.2.0",
     "through2": "^4.0.0"
   }
 }
