@@ -40,7 +40,6 @@
     "cross-env": "^7.0.3",
     "dependency-check": "^4.0.0",
     "fastbench": "^1.0.1",
-    "flush-write-stream": "^2.0.0",
     "pump": "^3.0.0",
     "split2": "^4.0.0",
     "standard": "^17.0.0",
