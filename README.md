@@ -4,7 +4,7 @@
 
 High performance debug logging. 
 
-Seamlessly integrates the [`debug`][12] module with the high performance [`pino`][13] 
+Seamlessly integrates the [`debug`][12] module with the high performance [`pino`][13]
 logger so you can turn on debug logs in production scenarios 
 with minimum overhead.
 
@@ -30,8 +30,8 @@ If all you want is fast JSON logging to STDOUT
 $ DEBUG=* node -r pino-debug app.js
 ```
 
-Namespaces are enabled the usual way, via the `DEBUG` 
-environment variable. 
+Namespaces are enabled the usual way, via the `DEBUG`
+environment variable.
 
 The namespace is also included in the log output, in the `ns` key.
 
@@ -75,28 +75,28 @@ The `auto` option turns on any namespaces listed in the `map` object
 
 ### pinoDebug(pinoInstance) => undefined
 
-Call `pino-debug` with a [`pino`][13] logger instance only and any debug namespaces 
-enabled via `DEBUG` or `debug.enable` will be logged with the level 20 (`'debug'`). 
+Call `pino-debug` with a [`pino`][13] logger instance only and any debug namespaces
+enabled via `DEBUG` or `debug.enable` will be logged with the level 20 (`'debug'`).
 
 Remember, if you want to see the messages you need to set the [`pino`][13] logger instance
 logging level to `'debug'`.
 
 ### pinoDebug() => undefined
 
-Call `pino-debug` without arguments and a default [`pino`][13] instance will be created with 
+Call `pino-debug` without arguments and a default [`pino`][13] instance will be created with
 the logging level set to 20 (`'debug'` level). 
 
-Any debug namespaces enabled via `DEBUG` or `debug.enable` will be logged 
+Any debug namespaces enabled via `DEBUG` or `debug.enable` will be logged
 with the level 20 (`'debug'`). 
 
 ### pinoDebug(pinoInstance, opts) => undefined
 
-This is the recommended usage. Call `pino-debug` with a [`pino`][13] logger instance, 
+This is the recommended usage. Call `pino-debug` with a [`pino`][13] logger instance,
 and an `opts` object containining `map` property. 
 
 #### `opts.map` `{'debug-namespace: 'pino-loglevel-label'}`
 
-The keys of the `map` property correspond to the same namespaces that can be 
+The keys of the `map` property correspond to the same namespaces that can be
 set on the `DEBUG` environment variable: 
 
 ```js
@@ -114,13 +114,13 @@ pinoDebug(pinoInstance, {
 If `true` (default) any debug namespaces found in the keys of `opts.map` will be
 enabled.  
 
-Additionally, any debug namespaces enabled via `DEBUG` or `debug.enable` 
-will be logged with the level 20 (`'debug'`). 
+Additionally, any debug namespaces enabled via `DEBUG` or `debug.enable`
+will be logged with the level 20 (`'debug'`).
 
-If `false`, any namespaces that appear in `opts.map` **and** are enabled via 
+If `false`, any namespaces that appear in `opts.map` **and** are enabled via
 `DEBUG` or `debug.enable` will be logged to with the corresponding log level,
 (as specified in the `opts.map`). Any not specified in `opts.map`, but which
-are enabled via `DEBUG` or `debug.enable` will be logged with the level 20 (`'debug'`). 
+are enabled via `DEBUG` or `debug.enable` will be logged with the level 20 (`'debug'`).
 
 #### `opts.skip` `Array`
 
@@ -176,7 +176,7 @@ the `DEBUG` environment variable to log everything,
 and then uses the `-r` flag to load `pino-debug` (relatively referenced).
 
 The three scripts beginning `start-programmatic` all use a different
-entry point where `pino-debug` has been required and instantiatd with
+entry point where `pino-debug` has been required and instantiated with
 a [`pino`][13] instance and the mappings (as shown in usage examples). 
 
 ## License
@@ -189,7 +189,7 @@ Sponsored by [nearForm](http://tldrlegal.com/license/mit-license)
 [1]: https://nodejs.org/api/documentation.html#documentation_stability_index
 [2]: https://img.shields.io/npm/v/pino-debug.svg?style=flat-square
 [3]: https://npmjs.org/package/pino-debug
-[4]: https://img.shields.io/github/workflow/status/pinojs/pino-debug/CI.svg?style=flat-square
+[4]: https://img.shields.io/github/actions/workflow/status/pinojs/pino-debug/ci.yml?style=flat-square
 [5]: https://github.com/pinojs/pino-debug/actions?query=workflow%3ACI+branch%3Amaster
 [6]: https://img.shields.io/codecov/c/github/pinojs/pino-debug/master.svg?style=flat-square
 [7]: https://codecov.io/github/pinojs/pino-debug
@@ -199,5 +199,5 @@ Sponsored by [nearForm](http://tldrlegal.com/license/mit-license)
 [11]: https://github.com/feross/standard
 [12]: https://npm.im/debug
 [13]: https://npm.im/pino
-[14]: https://david-dm.org/pinojs/pino-debug/status.svg
-[15]: https://david-dm.org/pinojs/pino-debug
+[14]: https://img.shields.io/librariesio/release/npm/pino-debug?style=flat-square
+[15]: https://libraries.io/npm/pino-debug
