@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const {exec, execSync} = require('child_process')
+const { exec, execSync } = require('child_process')
 const tap = require('tap')
 const through = require('through2')
 const test = tap.test
@@ -117,8 +117,6 @@ test('when passed no args, creates a standard pino logger with log level set to 
     t.equal(obj.level, 20)
     t.end()
   })
-
-
 })
 
 test('passes debug args to pino log method according to opts.map', (t) => {

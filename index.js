@@ -6,6 +6,7 @@ const debug = require('debug')
 
 module.exports = pinoDebug
 
+/* istanbul ignore next */
 if (module.parent && module.parent.parent === null && module.parent.filename === null) {
   // preloaded with -r flag
   pinoDebug()
