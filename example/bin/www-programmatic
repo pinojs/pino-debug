@@ -5,7 +5,7 @@
  */
 
 
-var pinoDebug = require('../../') // require('pino-debug')
+var pinoDebug = require('../../'); // require('pino-debug')
 const logger = require('pino')({level: process.env.LEVEL || 'debug'}, process.stderr);
 pinoDebug(logger, {
   auto: true, // default

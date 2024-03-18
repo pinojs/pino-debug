@@ -4,7 +4,7 @@ module.exports = debug
 
 function debug (namespace) {
   if (!debug.logger) {
-    throw Error('debug called before pino-debug initialized,' +
+    throw Error('debug called before pino-debug initialized, ' +
    'register pino-debug at the top of your entry point')
   }
 
