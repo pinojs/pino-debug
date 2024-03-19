@@ -1,5 +1,7 @@
 'use strict'
 
+var util = require('util');
+
 module.exports = debug
 
 function debug (namespace) {
@@ -16,7 +18,10 @@ function debug (namespace) {
   function disabled () {}
   disabled.enabled = false
   function enabled () {
-    return log.apply(logger, arguments)
+    //return log.apply(logger, arguments)
+
+    let message = util.format.apply(util, arguments) // this is how debug.js formats argeuments
+    return log.apply(logger, [message])
   }
   enabled.enabled = true
 
