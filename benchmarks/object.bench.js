@@ -26,7 +26,7 @@ delete require.cache[require.resolve('../')]
 delete require.cache[require.resolve('../debug')]
 require('module').wrap = wrap
 
-require('../')(pino({extreme: true, level: 'debug'}, dest))
+require('../')(pino({level: 'debug'}, dest))
 var pedlog = require('debug')('dlog')
 
 var max = 10
