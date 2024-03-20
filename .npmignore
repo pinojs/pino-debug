@@ -1,3 +1,7 @@
 example/
 coverage/
 .nyc_output/
+.tap/
+scripts/
+.github/
+test/

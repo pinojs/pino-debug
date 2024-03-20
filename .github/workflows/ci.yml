@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node-version: [10, 12, 14, 15, 16]
+        node-version: [18, 20]
         debug: [2, 3, 4]
     steps:
       - name: Checkout    

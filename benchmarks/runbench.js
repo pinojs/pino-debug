@@ -1,12 +1,12 @@
 'use strict'
 
-var fs = require('fs')
-var path = require('path')
-var spawn = require('child_process').spawn
-var pump = require('pump')
-var split = require('split2')
-var through = require('through2')
-var steed = require('steed')
+const fs = require('fs')
+const path = require('path')
+const spawn = require('child_process').spawn
+const pump = require('pump')
+const split = require('split2')
+const through = require('through2')
+const steed = require('steed')
 
 function usage () {
   return fs.createReadStream(path.join(__dirname, 'usage.txt'))
@@ -17,22 +17,22 @@ if (!process.argv[2]) {
   process.exit()
 }
 
-var selectedBenchmark = process.argv[2].toLowerCase()
-var benchmarkDir = path.resolve(__dirname)
-var benchmarks = {
+let selectedBenchmark = process.argv[2].toLowerCase()
+const benchmarkDir = path.resolve(__dirname)
+const benchmarks = {
   basic: 'basic.bench.js',
   object: 'object.bench.js',
   deepobject: 'deep-object.bench.js'
 }
 
 function runBenchmark (name, done) {
-  var benchmarkResults = {}
+  const benchmarkResults = {}
   benchmarkResults[name] = {}
 
-  var processor = through(function (line, enc, cb) {
-    var parts = ('' + line).split(': ')
-    var parts2 = parts[0].split('*')
-    var logger = parts2[0].replace('bench', '')
+  const processor = through(function (line, enc, cb) {
+    const parts = ('' + line).split(': ')
+    const parts2 = parts[0].split('*')
+    const logger = parts2[0].replace('bench', '')
 
     if (!benchmarkResults[name][logger]) benchmarkResults[name][logger] = []
 
@@ -45,7 +45,7 @@ function runBenchmark (name, done) {
   })
 
   console.log('Running ' + name.toUpperCase() + ' benchmark\n')
-  var benchmark = spawn(
+  const benchmark = spawn(
     process.argv[0],
     [path.join(benchmarkDir, benchmarks[name])]
   )
@@ -60,8 +60,8 @@ function runBenchmark (name, done) {
 }
 
 function sum (ar) {
-  var result = 0
-  for (var i = 0; i < ar.length; i += 1) {
+  let result = 0
+  for (let i = 0; i < ar.length; i += 1) {
     result += Number.parseFloat(ar[i].time)
   }
   return result
@@ -69,14 +69,14 @@ function sum (ar) {
 
 function displayResults (results) {
   console.log('==========')
-  var benchNames = Object.keys(results)
-  for (var i = 0; i < benchNames.length; i += 1) {
+  const benchNames = Object.keys(results)
+  for (let i = 0; i < benchNames.length; i += 1) {
     console.log(benchNames[i] + ' averages')
-    var benchmark = results[benchNames[i]]
-    var loggers = Object.keys(benchmark)
-    for (var j = 0; j < loggers.length; j += 1) {
-      var logger = benchmark[loggers[j]]
-      var average = Math.round(sum(logger) / logger.length)
+    const benchmark = results[benchNames[i]]
+    const loggers = Object.keys(benchmark)
+    for (let j = 0; j < loggers.length; j += 1) {
+      const logger = benchmark[loggers[j]]
+      const average = Math.round(sum(logger) / logger.length)
       console.log(loggers[j] + ' average: ' + average)
     }
   }
@@ -87,14 +87,14 @@ function toBench (done) {
   runBenchmark(this.name, done)
 }
 
-var benchQueue = []
+const benchQueue = []
 if (selectedBenchmark !== 'all') {
-  benchQueue.push(toBench.bind({name: selectedBenchmark}))
+  benchQueue.push(toBench.bind({ name: selectedBenchmark }))
 } else {
-  var keys = Object.keys(benchmarks)
-  for (var i = 0; i < keys.length; i += 1) {
+  const keys = Object.keys(benchmarks)
+  for (let i = 0; i < keys.length; i += 1) {
     selectedBenchmark = keys[i]
-    benchQueue.push(toBench.bind({name: selectedBenchmark}))
+    benchQueue.push(toBench.bind({ name: selectedBenchmark }))
   }
 }
 steed.series(benchQueue, function (err, results) {

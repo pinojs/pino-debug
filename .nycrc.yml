@@ -1,0 +1,8 @@
+use-spawn-wrap: true
+include: [index.js, debug.js]
+reporter: [text, lcov, html]
+check-coverage: true
+statements: 100
+branches: 97
+functions: 100
+lines: 100
