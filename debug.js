@@ -18,8 +18,6 @@ function debug (namespace) {
   function disabled () {}
   disabled.enabled = false
   function enabled () {
-    //return log.apply(logger, arguments)
-
     let message = util.format.apply(util, arguments) // this is how debug.js formats argeuments
     return log.apply(logger, [message])
   }
