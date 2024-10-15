@@ -2,6 +2,8 @@
 var execSync = require('child_process').execSync
 var tap = require('tap')
 var through = require('through2')
+const pinoDebug = require("../index");
+const debug = require("debug");
 var test = tap.test
 
 const debugModules = [
@@ -341,4 +343,21 @@ test('supports extend method', (t) => {
 test('does not invalidate strict mode', (t) => {
   t.is(require('./fixtures/strict-mode'), true)
   t.end()
+})
+
+test('Process all arguments debug.js style', (t) => {
+  var testOptions={"option1":"value1"};
+  process.env.DEBUG = 'ns1'
+  var pinoDebug = require('../')
+  var stream = through((line, _, cb) => {
+    var obj = JSON.parse(line)
+    var expectedMsg = "test { option1: 'value1' }";
+    t.is(obj.msg, expectedMsg)
+    t.is(obj.ns, 'ns1')
+    t.end()
+  })
+  pinoDebug(require('pino')({level: 'debug'}, stream))
+  var debug = require('debug')
+
+  debug('ns1')('test', testOptions)
 })
