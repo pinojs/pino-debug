@@ -28,7 +28,7 @@ require('module').wrap = wrap
 
 delete require.cache[require.resolve('pino')]
 pino = require('pino')
-require('../')(pino({extreme: true, level: 'debug'}, dest))
+require('../')(pino({level: 'debug'}, dest))
 var pedlog = require('debug')('dlog')
 
 var deep = require('../package.json')
