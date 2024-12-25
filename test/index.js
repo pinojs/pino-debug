@@ -31,7 +31,7 @@ const commonModules = [
   './'
 ]
 
-tap.afterEach((done) => {
+tap.afterEach(() => {
   let err = null
   for (const modules of debugModules) {
     try {
@@ -48,12 +48,11 @@ tap.afterEach((done) => {
     throw err
   }
   process.env.DEBUG = ''
-  done()
 })
 
 test('throws if called more than once', (t) => {
   var pinoDebug = require('../')
-  t.throw(() => {
+  t.throws(() => {
     pinoDebug()
     pinoDebug()
   })
@@ -63,7 +62,7 @@ test('throws if called more than once', (t) => {
 test('throws if debug is called after requiring but before calling pinoDebug', (t) => {
   require('../')
   var debug = require('debug')
-  t.throw(() => debug('ns'))
+  t.throws(() => debug('ns'))
   t.end()
 })
 
@@ -71,8 +70,8 @@ test('captures any calls to `debug` and passes them through pino logger', (t) =>
   var pinoDebug = require('../')
   var stream = through((line, _, cb) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, 'ns')
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, 'ns')
     t.end()
   })
   pinoDebug(require('pino')({level: 'debug'}, stream))
@@ -85,9 +84,9 @@ test('defaults to calling pinoInstance.debug', (t) => {
   var pinoDebug = require('../')
   var stream = through((line, _, cb) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, 'ns')
-    t.is(obj.level, 20)
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, 'ns')
+    t.equal(obj.level, 20)
     t.end()
   })
   pinoDebug(require('pino')({level: 'debug'}, stream))
@@ -107,9 +106,9 @@ test('when passed no args, creates a standard pino logger with log level set to 
   `
   var line = execSync(`${process.argv[0]} -e "${program}"`).toString()
   var obj = JSON.parse(line)
-  t.is(obj.msg, 'test')
-  t.is(obj.ns, 'ns')
-  t.is(obj.level, 20)
+  t.equal(obj.msg, 'test')
+  t.equal(obj.ns, 'ns')
+  t.equal(obj.level, 20)
   t.end()
 })
 
@@ -117,9 +116,9 @@ test('passes debug args to pino log method according to opts.map', (t) => {
   var pinoDebug = require('../')
   var stream = through((line, _, cb) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, 'ns')
-    t.is(obj.level, 30)
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, 'ns')
+    t.equal(obj.level, 30)
     t.end()
   })
   pinoDebug(require('pino')(stream), {map: {ns: 'info'}})
@@ -131,15 +130,15 @@ test('passes debug args to pino log method according to opts.map when auto is of
   var pinoDebug = require('../')
   var ns = (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, 'ns')
-    t.is(obj.level, 30)
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, 'ns')
+    t.equal(obj.level, 30)
   }
   var ns2 = (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test2')
-    t.is(obj.ns, 'ns2')
-    t.is(obj.level, 40)
+    t.equal(obj.msg, 'test2')
+    t.equal(obj.ns, 'ns2')
+    t.equal(obj.level, 40)
   }
   var stream = through((line, _, cb) => {
     if (!ns.called) {
@@ -166,9 +165,9 @@ test('does not pass debug args to pino log method according to opts.map when aut
 
   var stream = through((line, _, cb) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test2')
-    t.is(obj.ns, 'ns2')
-    t.is(obj.level, 40)
+    t.equal(obj.msg, 'test2')
+    t.equal(obj.ns, 'ns2')
+    t.equal(obj.level, 40)
     t.end()
     cb()
   })
@@ -187,9 +186,9 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
   `
   var line = execSync(`${process.argv[0]} -r ${__dirname}/../ -e "${program}"`, {env: {DEBUG: '*'}}).toString()
   var obj = JSON.parse(line)
-  t.is(obj.msg, 'test')
-  t.is(obj.ns, 'ns')
-  t.is(obj.level, 20)
+  t.equal(obj.msg, 'test')
+  t.equal(obj.ns, 'ns')
+  t.equal(obj.level, 20)
   t.end()
 })
 
@@ -198,9 +197,9 @@ test('opts.skip filters out any matching namespaces', (t) => {
 
   var stream = through((line, _, cb) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, 'ns')
-    t.is(obj.level, 30)
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, 'ns')
+    t.equal(obj.level, 30)
     t.end()
     cb()
   })
@@ -219,44 +218,44 @@ test('when there is a match conflict, log level is set to most precise match', (
 
   var queue = [(line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, 'ns')
-    t.is(obj.level, 30)
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, 'ns')
+    t.equal(obj.level, 30)
   }, (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test2')
-    t.is(obj.ns, 'ns2')
-    t.is(obj.level, 40)
+    t.equal(obj.msg, 'test2')
+    t.equal(obj.ns, 'ns2')
+    t.equal(obj.level, 40)
   }, (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test3')
-    t.is(obj.ns, 'meow')
-    t.is(obj.level, 50)
+    t.equal(obj.msg, 'test3')
+    t.equal(obj.ns, 'meow')
+    t.equal(obj.level, 50)
   }, (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test4')
-    t.is(obj.ns, 'izikilla')
-    t.is(obj.level, 60)
+    t.equal(obj.msg, 'test4')
+    t.equal(obj.ns, 'izikilla')
+    t.equal(obj.level, 60)
   }, (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test5')
-    t.is(obj.ns, 'testtracetest')
-    t.is(obj.level, 10)
+    t.equal(obj.msg, 'test5')
+    t.equal(obj.ns, 'testtracetest')
+    t.equal(obj.level, 10)
   }, (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test6')
-    t.is(obj.ns, 'debugtra')
-    t.is(obj.level, 20)
+    t.equal(obj.msg, 'test6')
+    t.equal(obj.ns, 'debugtra')
+    t.equal(obj.level, 20)
   }, (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test7')
-    t.is(obj.ns, 'ns3')
-    t.is(obj.level, 20)
+    t.equal(obj.msg, 'test7')
+    t.equal(obj.ns, 'ns3')
+    t.equal(obj.level, 20)
   }, (line) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test8')
-    t.is(obj.ns, 'testbla')
-    t.is(obj.level, 30)
+    t.equal(obj.msg, 'test8')
+    t.equal(obj.ns, 'testbla')
+    t.equal(obj.level, 30)
   }]
 
   var stream = through((line, _, cb) => {
@@ -297,7 +296,7 @@ test('keeps line numbers consistent', (t) => {
   require('../')
   var lineNums = require('./fixtures/line-numbers')
   var line = lineNums()
-  t.is(line, 4)
+  t.equal(line, 4)
 
   t.end()
 })
@@ -312,8 +311,8 @@ test('preserves DEBUG env independently from debug module', (t) => {
   var pinoDebug = require('../')
   var stream = through((line, _, cb) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, 'ns1')
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, 'ns1')
     t.end()
   })
   pinoDebug(require('pino')({level: 'debug'}, stream))
@@ -328,8 +327,8 @@ test('supports extend method', (t) => {
   var count = 0
   var stream = through((line, _, cb) => {
     var obj = JSON.parse(line)
-    t.is(obj.msg, 'test')
-    t.is(obj.ns, ns[count++])
+    t.equal(obj.msg, 'test')
+    t.equal(obj.ns, ns[count++])
     cb()
   }, () => t.end())
   pinoDebug(require('pino')({level: 'debug'}, stream))
@@ -341,7 +340,7 @@ test('supports extend method', (t) => {
 })
 
 test('does not invalidate strict mode', (t) => {
-  t.is(require('./fixtures/strict-mode'), true)
+  t.equal(require('./fixtures/strict-mode'), true)
   t.end()
 })
 
