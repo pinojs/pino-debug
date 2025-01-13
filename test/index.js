@@ -351,3 +351,20 @@ test('does not invalidate strict mode', (t) => {
   t.equal(require('./fixtures/strict-mode'), true)
   t.end()
 })
+
+test('Process all arguments debug.js style', (t) => {
+  const testOptions = { option1: 'value1' }
+  process.env.DEBUG = 'ns1'
+  const pinoDebug = require('../')
+  const stream = through((line, _, cb) => {
+    const obj = JSON.parse(line)
+    const expectedMsg = "test { option1: 'value1' }"
+    t.equal(obj.msg, expectedMsg)
+    t.equal(obj.ns, 'ns1')
+    t.end()
+  })
+  pinoDebug(require('pino')({ level: 'debug' }, stream))
+  const debug = require('debug')
+
+  debug('ns1')('test', testOptions)
+})
