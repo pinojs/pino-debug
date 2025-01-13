@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node-version: [10, 12, 14, 15, 16]
+        node-version: [18, 20, 22]
         debug: [2, 3, 4]
     steps:
       - name: Checkout    
@@ -38,9 +38,6 @@ jobs:
 
       - name: Run Tests
         run: npm run ci
-
-      - name: CodeCov
-        run: npm i -g codecov && codecov -t a62849b5-9006-4dd4-8334-94624d6d8ea2
 
   automerge:
     needs: build

@@ -1,11 +1,12 @@
 'use strict'
 
-var pino = require('pino')
+const pino = require('pino')
 require('module').wrap = override
-var debug = require('debug')
+const debug = require('debug')
 
 module.exports = pinoDebug
 
+/* istanbul ignore next */
 if (module.parent && module.parent.parent === null && module.parent.filename === null) {
   // preloaded with -r flag
   pinoDebug()
@@ -15,15 +16,15 @@ function pinoDebug (logger, opts) {
   if (pinoDebug.called) throw Error('pino-debug can only be called once')
   pinoDebug.called = true
   opts = opts || {}
-  var auto = 'auto' in opts ? opts.auto : true
-  var map = opts.map || {}
-  var namespaces = getNamespaces()
+  const auto = 'auto' in opts ? opts.auto : true
+  const map = opts.map || {}
+  const namespaces = getNamespaces()
   debug.map = Object.keys(map).sort(byPrecision).reduce(function (m, k) {
     if (auto) namespaces.push(k)
     m.set(RegExp('^' + k.replace(/[\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*?') + '$'), map[k])
     return m
   }, new Map())
-  debug.logger = logger || pino({level: 'debug'})
+  debug.logger = logger || pino({ level: 'debug' })
   if (opts.skip) {
     opts.skip.map(function (ns) { return '-' + ns }).forEach(function (ns) { namespaces.push(ns) })
   }
@@ -31,7 +32,7 @@ function pinoDebug (logger, opts) {
 }
 
 function getNamespaces () {
-  var namespaces = process.env.DEBUG
+  const namespaces = process.env.DEBUG
   if (namespaces != null) {
     return (typeof namespaces === 'string' ? namespaces : '').split(/[\s,]+/)
   }
@@ -39,8 +40,8 @@ function getNamespaces () {
 }
 
 function byPrecision (a, b) {
-  var aix = a.indexOf('*')
-  var bix = b.indexOf('*')
+  const aix = a.indexOf('*')
+  const bix = b.indexOf('*')
   if (aix === -1 && bix === -1) return 0
   if (~aix && ~bix) {
     if (aix > bix) return -1
@@ -57,9 +58,9 @@ function override (script) {
   // F:\Projekty\Learn\pino-debug\debug.js) will be interpreted during interpolation
   // as F:ProjektyLearnpino-debugdebug.js and node.js will throw error
   // Cannot find module 'F:ProjektyLearnpino-debugdebug.js'
-  var pathToPinoDebug = require.resolve('./debug').replace(/\\/g, '\\\\')
+  const pathToPinoDebug = require.resolve('./debug').replace(/\\/g, '\\\\')
 
-  var head = `(function(exports, require, module, __filename, __dirname) {
+  const head = `(function(exports, require, module, __filename, __dirname) {
       require = (function (req) {
         var pinoDebugOs = require('os')
         var pinoDebugPath = require('path')
@@ -99,7 +100,7 @@ function override (script) {
       }(require))
       return (function(){
   `.trim().replace(/\n/g, ';').replace(/\s+/g, ' ').replace(/;+/g, ';')
-  var tail = '\n}).call(this);})'
+  const tail = '\n}).call(this);})'
 
   return head + script + tail
 }
