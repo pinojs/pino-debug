@@ -36,7 +36,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "pino": "^8.0.0"
+    "pino": "^9.0.0"
   },
   "peerDependencies": {
     "debug": ">=2"
