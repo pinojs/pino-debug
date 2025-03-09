@@ -2,50 +2,102 @@ name: CI
 
 on:
   push:
+    branches:
+     - main
+     - master
+     - next
+     - 'v*'
     paths-ignore:
-        - 'docs/**'
-        - '*.md'
+      - 'docs/**'
+      - '*.md'
   pull_request:
     paths-ignore:
-        - 'docs/**'
-        - '*.md'
+      - 'docs/**'
+      - '*.md'
 
 jobs:
-  build:
-    name: ${{ matrix.node-version }} ${{ matrix.os }}
+  dependency-review:
+    name: Dependency Review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Dependency review
+        uses: actions/dependency-review-action@v4
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          check-latest: true
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm i --ignore-scripts
+
+      - name: Lint code
+        run: npm run lint
+
+  test:
+    name: Test
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         node-version: [18, 20, 22]
+        os: [ubuntu-latest]
         debug: [2, 3, 4]
     steps:
-      - name: Checkout    
-        uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Check out repo
+        uses: actions/checkout@v4
         with:
+          persist-credentials: false
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          check-latest: true
           node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
-        run: npm i
-      - name: Install debug@${{ matrix.debug}}
-        run: npm i --no-save debug@${{ matrix.debug }}
+        run: npm i --ignore-scripts
 
-      - name: Run Tests
-        run: npm run ci
+      - name: Install debug@${{ matrix.debug}}
+        run: npm i --ignore-scripts --no-save debug@${{ matrix.debug }}
+
+      - name: Run tests
+        run: npm test
 
   automerge:
-    needs: build
-    runs-on: ubuntu-latest
+    name: Automerge Dependabot PRs
+    if: >
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.user.login == 'dependabot[bot]'
+    needs: test
     permissions:
       pull-requests: write
       contents: write
+    runs-on: ubuntu-latest
     steps:
       - uses: fastify/github-action-merge-dependabot@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          target: major
