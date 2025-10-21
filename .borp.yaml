@@ -1,0 +1,9 @@
+files:
+  - test/index.js
+
+coverage:
+  check-coverage: true
+  statements: 76
+  branches: 81
+  functions: 69
+  lines: 76
