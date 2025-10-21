@@ -1,10 +1,10 @@
 'use strict'
 
-const path = require('path')
-const { exec, execSync } = require('child_process')
-const tap = require('tap')
+const test = require('node:test')
+const assert = require('node:assert')
+const path = require('node:path')
+const { exec, execSync } = require('node:child_process')
 const through = require('through2')
-const test = tap.test
 
 const debugModules = [
   // <= 2.4
@@ -31,7 +31,7 @@ const commonModules = [
   './'
 ]
 
-tap.afterEach(() => {
+test.afterEach(() => {
   let err = null
   for (const modules of debugModules) {
     try {
@@ -50,29 +50,27 @@ tap.afterEach(() => {
   process.env.DEBUG = ''
 })
 
-test('throws if called more than once', (t) => {
+test('throws if called more than once', () => {
   const pinoDebug = require('../')
-  t.throws(() => {
+  assert.throws(() => {
     pinoDebug()
     pinoDebug()
   })
-  t.end()
 })
 
-test('throws if debug is called after requiring but before calling pinoDebug', (t) => {
+test('throws if debug is called after requiring but before calling pinoDebug', () => {
   require('../')
   const debug = require('debug')
-  t.throws(() => debug('ns'))
-  t.end()
+  assert.throws(() => debug('ns'))
 })
 
-test('captures any calls to `debug` and passes them through pino logger', (t) => {
+test('captures any calls to `debug` and passes them through pino logger', (t, end) => {
   const pinoDebug = require('../')
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns')
-    t.end()
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns')
+    end()
   })
   pinoDebug(require('pino')({ level: 'debug' }, stream))
   const debug = require('debug')
@@ -80,14 +78,14 @@ test('captures any calls to `debug` and passes them through pino logger', (t) =>
   debug('ns')('test')
 })
 
-test('defaults to calling pinoInstance.debug', (t) => {
+test('defaults to calling pinoInstance.debug', (t, end) => {
   const pinoDebug = require('../')
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns')
-    t.equal(obj.level, 20)
-    t.end()
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns')
+    assert.equal(obj.level, 20)
+    end()
   })
   pinoDebug(require('pino')({ level: 'debug' }, stream))
   const debug = require('debug')
@@ -95,7 +93,7 @@ test('defaults to calling pinoInstance.debug', (t) => {
   debug('ns')('test')
 })
 
-test('when passed no args, creates a standard pino logger with log level set to debug and logs to it\'s debug method', (t) => {
+test('when passed no args, creates a standard pino logger with log level set to debug and logs to it\'s debug method', (t, end) => {
   const debug = path.join(__dirname, '..')
   const program = `
     var pinoDebug = require('${debug}')
@@ -106,46 +104,44 @@ test('when passed no args, creates a standard pino logger with log level set to 
     debug('ns')('test')
   `
 
-  exec(`${process.argv[0]} -e "${program}"`, (err, stdout, stderr) => {
-    t.error(err)
-    console.log(stdout.toString())
-    console.log(stderr.toString())
+  exec(`${process.argv[0]} -e "${program}"`, (err, stdout) => {
+    assert.equal(err, undefined)
     const line = stdout.toString()
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns')
-    t.equal(obj.level, 20)
-    t.end()
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns')
+    assert.equal(obj.level, 20)
+    end()
   })
 })
 
-test('passes debug args to pino log method according to opts.map', (t) => {
+test('passes debug args to pino log method according to opts.map', (t, end) => {
   const pinoDebug = require('../')
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns')
-    t.equal(obj.level, 30)
-    t.end()
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns')
+    assert.equal(obj.level, 30)
+    end()
   })
   pinoDebug(require('pino')(stream), { map: { ns: 'info' } })
   const debug = require('debug')
   debug('ns')('test')
 })
 
-test('passes debug args to pino log method according to opts.map when auto is off but namespaces have been enabled', (t) => {
+test('passes debug args to pino log method according to opts.map when auto is off but namespaces have been enabled', (t, end) => {
   const pinoDebug = require('../')
   const ns = (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns')
-    t.equal(obj.level, 30)
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns')
+    assert.equal(obj.level, 30)
   }
   const ns2 = (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test2')
-    t.equal(obj.ns, 'ns2')
-    t.equal(obj.level, 40)
+    assert.equal(obj.msg, 'test2')
+    assert.equal(obj.ns, 'ns2')
+    assert.equal(obj.level, 40)
   }
   const stream = through((line, _, cb) => {
     if (!ns.called) {
@@ -155,7 +151,7 @@ test('passes debug args to pino log method according to opts.map when auto is of
       return
     }
     ns2(line)
-    t.end()
+    end()
   })
 
   pinoDebug(require('pino')(stream), { auto: false, map: { ns: 'info', ns2: 'warn' } })
@@ -167,15 +163,15 @@ test('passes debug args to pino log method according to opts.map when auto is of
   debug('ns2')('test2')
 })
 
-test('does not pass debug args to pino log method according to opts.map when auto is off and namespaces have not been enabled', (t) => {
+test('does not pass debug args to pino log method according to opts.map when auto is off and namespaces have not been enabled', (t, end) => {
   const pinoDebug = require('../')
 
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test2')
-    t.equal(obj.ns, 'ns2')
-    t.equal(obj.level, 40)
-    t.end()
+    assert.equal(obj.msg, 'test2')
+    assert.equal(obj.ns, 'ns2')
+    assert.equal(obj.level, 40)
+    end()
     cb()
   })
 
@@ -194,21 +190,20 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
   const debug = path.join(__dirname, '..')
   const line = execSync(`${process.argv[0]} -r ${debug} -e "${program}"`, { env: { DEBUG: '*' } }).toString()
   const obj = JSON.parse(line)
-  t.equal(obj.msg, 'test')
-  t.equal(obj.ns, 'ns')
-  t.equal(obj.level, 20)
-  t.end()
+  assert.equal(obj.msg, 'test')
+  assert.equal(obj.ns, 'ns')
+  assert.equal(obj.level, 20)
 })
 
-test('opts.skip filters out any matching namespaces', (t) => {
+test('opts.skip filters out any matching namespaces', (t, end) => {
   const pinoDebug = require('../')
 
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns')
-    t.equal(obj.level, 30)
-    t.end()
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns')
+    assert.equal(obj.level, 30)
+    end()
     cb()
   })
 
@@ -221,55 +216,55 @@ test('opts.skip filters out any matching namespaces', (t) => {
   debug('ns')('test')
 })
 
-test('when there is a match conflict, log level is set to most precise match', (t) => {
+test('when there is a match conflict, log level is set to most precise match', (t, end) => {
   const pinoDebug = require('../')
 
   const queue = [(line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns')
-    t.equal(obj.level, 30)
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns')
+    assert.equal(obj.level, 30)
   }, (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test2')
-    t.equal(obj.ns, 'ns2')
-    t.equal(obj.level, 40)
+    assert.equal(obj.msg, 'test2')
+    assert.equal(obj.ns, 'ns2')
+    assert.equal(obj.level, 40)
   }, (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test3')
-    t.equal(obj.ns, 'meow')
-    t.equal(obj.level, 50)
+    assert.equal(obj.msg, 'test3')
+    assert.equal(obj.ns, 'meow')
+    assert.equal(obj.level, 50)
   }, (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test4')
-    t.equal(obj.ns, 'izikilla')
-    t.equal(obj.level, 60)
+    assert.equal(obj.msg, 'test4')
+    assert.equal(obj.ns, 'izikilla')
+    assert.equal(obj.level, 60)
   }, (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test5')
-    t.equal(obj.ns, 'testtracetest')
-    t.equal(obj.level, 10)
+    assert.equal(obj.msg, 'test5')
+    assert.equal(obj.ns, 'testtracetest')
+    assert.equal(obj.level, 10)
   }, (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test6')
-    t.equal(obj.ns, 'debugtra')
-    t.equal(obj.level, 20)
+    assert.equal(obj.msg, 'test6')
+    assert.equal(obj.ns, 'debugtra')
+    assert.equal(obj.level, 20)
   }, (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test7')
-    t.equal(obj.ns, 'ns3')
-    t.equal(obj.level, 20)
+    assert.equal(obj.msg, 'test7')
+    assert.equal(obj.ns, 'ns3')
+    assert.equal(obj.level, 20)
   }, (line) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test8')
-    t.equal(obj.ns, 'testbla')
-    t.equal(obj.level, 30)
+    assert.equal(obj.msg, 'test8')
+    assert.equal(obj.ns, 'testbla')
+    assert.equal(obj.level, 30)
   }]
 
   const stream = through((line, _, cb) => {
     queue.shift()(line)
     cb()
-    if (!queue.length) t.end()
+    if (!queue.length) end()
   })
 
   pinoDebug(require('pino')({ level: 'trace' }, stream), {
@@ -295,50 +290,46 @@ test('when there is a match conflict, log level is set to most precise match', (
   debug('testbla')('test8')
 })
 
-test('uses native `Object` regardless of wrapped file contents', (t) => {
-  t.doesNotThrow(() => require('./fixtures/object-override'))
-  t.end()
+test('uses native `Object` regardless of wrapped file contents', () => {
+  assert.doesNotThrow(() => require('./fixtures/object-override'))
 })
 
-test('keeps line numbers consistent', (t) => {
+test('keeps line numbers consistent', () => {
   require('../')
   const lineNums = require('./fixtures/line-numbers')
   const line = lineNums()
-  t.equal(line, 4)
-
-  t.end()
+  assert.equal(line, 4)
 })
 
-test('results in valid syntax when source has trailing comment', (t) => {
-  t.doesNotThrow(() => require('./fixtures/trailing-comment'))
-  t.end()
+test('results in valid syntax when source has trailing comment', () => {
+  assert.doesNotThrow(() => require('./fixtures/trailing-comment'))
 })
 
-test('preserves DEBUG env independently from debug module', (t) => {
+test('preserves DEBUG env independently from debug module', (t, end) => {
   process.env.DEBUG = 'ns1'
   const pinoDebug = require('../')
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, 'ns1')
-    t.end()
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, 'ns1')
+    end()
   })
   pinoDebug(require('pino')({ level: 'debug' }, stream))
   const debug = require('debug')
   debug('ns1')('test')
 })
 
-test('supports extend method', (t) => {
+test('supports extend method', (t, end) => {
   process.env.DEBUG = '*'
   const pinoDebug = require('../')
   const ns = ['ns1', 'ns1:ns2', 'ns1;ns2']
   let count = 0
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
-    t.equal(obj.msg, 'test')
-    t.equal(obj.ns, ns[count++])
+    assert.equal(obj.msg, 'test')
+    assert.equal(obj.ns, ns[count++])
     cb()
-  }, () => t.end())
+  }, () => end())
   pinoDebug(require('pino')({ level: 'debug' }, stream))
   const debug = require('debug')
   debug('ns1')('test')
@@ -347,21 +338,20 @@ test('supports extend method', (t) => {
   stream.end()
 })
 
-test('does not invalidate strict mode', (t) => {
-  t.equal(require('./fixtures/strict-mode'), true)
-  t.end()
+test('does not invalidate strict mode', () => {
+  assert.equal(require('./fixtures/strict-mode'), true)
 })
 
-test('Process all arguments debug.js style', (t) => {
+test('Process all arguments debug.js style', (t, end) => {
   const testOptions = { option1: 'value1' }
   process.env.DEBUG = 'ns1'
   const pinoDebug = require('../')
   const stream = through((line, _, cb) => {
     const obj = JSON.parse(line)
     const expectedMsg = "test { option1: 'value1' }"
-    t.equal(obj.msg, expectedMsg)
-    t.equal(obj.ns, 'ns1')
-    t.end()
+    assert.equal(obj.msg, expectedMsg)
+    assert.equal(obj.ns, 'ns1')
+    end()
   })
   pinoDebug(require('pino')({ level: 'debug' }, stream))
   const debug = require('debug')

@@ -1,4 +1,0 @@
-timeout: 480
-reporter: terse
-include: [test/*.js]
-disable-coverage: true
