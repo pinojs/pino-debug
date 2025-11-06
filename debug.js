@@ -18,8 +18,22 @@ function debug (namespace) {
   function disabled () {}
   disabled.enabled = false
   function enabled () {
-    const message = util.format.apply(util, arguments) // this is how debug.js formats argeuments
-    return log.apply(logger, [message])
+    // Detect pino's object-first logging pattern: first arg is a plain object or Error with additional args
+    // This preserves structured logging: debug({data: 'test'}, 'message') -> {ns: 'x', data: 'test', msg: 'message'}
+    // And proper error serialization: debug(err, 'message') -> {ns: 'x', err: {...}, msg: 'message'}
+    const isObjectFirst = arguments.length > 1 &&
+      typeof arguments[0] === 'object' &&
+      arguments[0] !== null &&
+      (arguments[0].constructor === Object || arguments[0] instanceof Error)
+
+    if (isObjectFirst) {
+      // Pass arguments directly to pino to preserve structured logging or error serialization
+      return log.apply(logger, arguments)
+    } else {
+      // Use util.format for debug.js style formatting (PR #134)
+      const message = util.format.apply(util, arguments)
+      return log.apply(logger, [message])
+    }
   }
   enabled.enabled = true
 
