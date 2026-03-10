@@ -358,3 +358,110 @@ test('Process all arguments debug.js style', (t, end) => {
 
   debug('ns1')('test', testOptions)
 })
+
+test('Supports pino object-first logging syntax with message', (t, end) => {
+  process.env.DEBUG = 'ns1'
+  const pinoDebug = require('../')
+  const stream = through((line, _, cb) => {
+    const obj = JSON.parse(line)
+    assert.equal(obj.msg, 'Some message')
+    assert.equal(obj.ns, 'ns1')
+    assert.equal(obj.data, 'test')
+    assert.equal(obj.level, 20)
+    end()
+  })
+  pinoDebug(require('pino')({ level: 'debug' }, stream))
+  const debug = require('debug')
+
+  debug('ns1')({ data: 'test' }, 'Some message')
+})
+
+test('Supports pino object-first logging with multiple fields', (t, end) => {
+  process.env.DEBUG = 'ns1'
+  const pinoDebug = require('../')
+  const stream = through((line, _, cb) => {
+    const obj = JSON.parse(line)
+    assert.equal(obj.msg, 'Complex log')
+    assert.equal(obj.ns, 'ns1')
+    assert.equal(obj.userId, 123)
+    assert.equal(obj.action, 'login')
+    assert.equal(obj.success, true)
+    end()
+  })
+  pinoDebug(require('pino')({ level: 'debug' }, stream))
+  const debug = require('debug')
+
+  debug('ns1')({ userId: 123, action: 'login', success: true }, 'Complex log')
+})
+
+test('Does not treat array as object-first pattern', (t, end) => {
+  process.env.DEBUG = 'ns1'
+  const pinoDebug = require('../')
+  const stream = through((line, _, cb) => {
+    const obj = JSON.parse(line)
+    assert.equal(obj.msg, '[ 1, 2, 3 ] Some message')
+    assert.equal(obj.ns, 'ns1')
+    end()
+  })
+  pinoDebug(require('pino')({ level: 'debug' }, stream))
+  const debug = require('debug')
+
+  debug('ns1')([1, 2, 3], 'Some message')
+})
+
+test('Properly serializes Error with message like pino', (t, end) => {
+  process.env.DEBUG = 'ns1'
+  const pinoDebug = require('../')
+  const stream = through((line, _, cb) => {
+    const obj = JSON.parse(line)
+    assert.equal(obj.msg, 'Some message')
+    assert.equal(obj.ns, 'ns1')
+    assert.ok(obj.err, 'err object should exist')
+    assert.equal(obj.err.type, 'Error')
+    assert.equal(obj.err.message, 'Test error')
+    assert.ok(obj.err.stack, 'stack should exist')
+    end()
+  })
+  pinoDebug(require('pino')({ level: 'debug' }, stream))
+  const debug = require('debug')
+
+  debug('ns1')(new Error('Test error'), 'Some message')
+})
+
+test('Properly serializes Error with custom properties', (t, end) => {
+  process.env.DEBUG = 'ns1'
+  const pinoDebug = require('../')
+  const stream = through((line, _, cb) => {
+    const obj = JSON.parse(line)
+    assert.equal(obj.msg, 'Login failed')
+    assert.equal(obj.ns, 'ns1')
+    assert.ok(obj.err, 'err object should exist')
+    assert.equal(obj.err.type, 'Error')
+    assert.equal(obj.err.message, 'Custom error')
+    assert.equal(obj.err.userId, 123)
+    assert.equal(obj.err.action, 'login')
+    assert.ok(obj.err.stack, 'stack should exist')
+    end()
+  })
+  pinoDebug(require('pino')({ level: 'debug' }, stream))
+  const debug = require('debug')
+
+  const err = Object.assign(new Error('Custom error'), { userId: 123, action: 'login' })
+  debug('ns1')(err, 'Login failed')
+})
+
+test('Handles object-only argument (no message)', (t, end) => {
+  process.env.DEBUG = 'ns1'
+  const pinoDebug = require('../')
+  const stream = through((line, _, cb) => {
+    const obj = JSON.parse(line)
+    // When only an object is passed, util.format will stringify it
+    assert.equal(obj.msg, '{ data: \'test\' }')
+    assert.equal(obj.ns, 'ns1')
+    end()
+  })
+  pinoDebug(require('pino')({ level: 'debug' }, stream))
+  const debug = require('debug')
+
+  debug('ns1')({ data: 'test' })
+})
