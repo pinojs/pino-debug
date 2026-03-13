@@ -495,6 +495,26 @@ test('Handles object-only argument (no message)', (t, end) => {
   debug('ns1')({ data: 'test' })
 })
 
+test('handles non-string DEBUG env values', () => {
+  const originalEnv = process.env
+  process.env = { DEBUG: 1 }
+
+  try {
+    const pinoDebug = require('../')
+    const logger = {
+      child: function () {
+        return {
+          debug: function () {}
+        }
+      }
+    }
+
+    assert.doesNotThrow(() => pinoDebug(logger, { auto: false }))
+  } finally {
+    process.env = originalEnv
+  }
+})
+
 test('covers direct debug module enabled and disabled functions', () => {
   const pinoDebugDebug = require('../debug')
   const calls = []
