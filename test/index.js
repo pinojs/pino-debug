@@ -3,7 +3,7 @@
 const test = require('node:test')
 const assert = require('node:assert')
 const path = require('node:path')
-const { exec, execSync } = require('node:child_process')
+const { exec, execSync, execFileSync } = require('node:child_process')
 const through = require('through2')
 
 const debugModules = [
@@ -193,6 +193,35 @@ test('when preloaded with -r, automatically logs all debug calls with log level 
   assert.equal(obj.msg, 'test')
   assert.equal(obj.ns, 'ns')
   assert.equal(obj.level, 20)
+})
+
+test('child process covers map sorting, skip and object-first logging', () => {
+  const debugPath = path.join(__dirname, '..')
+  const program = `
+    var pinoDebug = require('${debugPath}')
+    pinoDebug(null, {
+      map: {
+        ns2: 'warn',
+        'ns*': 'info',
+        '*trace*': 'trace'
+      },
+      skip: ['skipme']
+    })
+    var debug = require('debug')
+    debug('ns1')('first')
+    debug('ns2')({ data: 'x' }, 'second')
+    debug('skipme')('ignored')
+  `
+
+  const output = execFileSync(process.argv[0], ['-e', program]).toString().trim()
+  const lines = output.split('\n').filter(Boolean).map(line => JSON.parse(line))
+
+  assert.equal(lines.length, 2)
+  assert.equal(lines[0].msg, 'first')
+  assert.equal(lines[0].level, 30)
+  assert.equal(lines[1].msg, 'second')
+  assert.equal(lines[1].level, 40)
+  assert.equal(lines[1].data, 'x')
 })
 
 test('opts.skip filters out any matching namespaces', (t, end) => {
@@ -464,4 +493,38 @@ test('Handles object-only argument (no message)', (t, end) => {
   const debug = require('debug')
 
   debug('ns1')({ data: 'test' })
+})
+
+test('covers direct debug module enabled and disabled functions', () => {
+  const pinoDebugDebug = require('../debug')
+  const calls = []
+
+  pinoDebugDebug.logger = {
+    child: function () {
+      return {
+        debug: function () { calls.push(['debug', Array.from(arguments)]) },
+        info: function () { calls.push(['info', Array.from(arguments)]) }
+      }
+    }
+  }
+  pinoDebugDebug.map = new Map([[/^ns$/, 'info']])
+  pinoDebugDebug.enabled = function (namespace) {
+    return namespace === 'ns'
+  }
+
+  const enabled = pinoDebugDebug('ns')
+  assert.equal(enabled.enabled, true)
+  enabled('hello %s', 'world')
+  enabled({ data: 'x' }, 'msg')
+
+  assert.equal(calls[0][0], 'info')
+  assert.deepEqual(calls[0][1], ['hello world'])
+  assert.equal(calls[1][0], 'info')
+  assert.deepEqual(calls[1][1], [{ data: 'x' }, 'msg'])
+
+  pinoDebugDebug.enabled = function () { return false }
+  const disabled = pinoDebugDebug('off')
+  assert.equal(disabled.enabled, false)
+  assert.equal(disabled.namespace, 'off')
+  assert.doesNotThrow(() => disabled('ignored'))
 })
